@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond Bank ATM Locator</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Beyond Bank</h1>
+            <div class="switch-container">
+                <label class="switch">
+                    <input type="checkbox" id="rename-switch" checked>
+                    <span class="slider round"></span>
+                </label>
+                <span class="switch-label">Rename to Beyond Bank</span>
+            </div>
+        </div>
+        <div class="search-container">
+            <h2>ATM & Bank Locator</h2>
+            <div class="search-box">
+                <div class="input-wrapper">
+                    <input type="text" id="search-input" placeholder="Enter location...">
+                    <div id="suggestions" class="suggestions"></div>
+                </div>
+                <button id="search-btn">Search</button>
+            </div>
+        </div>
+        <div class="content-container">
+            <div class="results-container">
+                <h2>Nearest ATMs</h2>
+                <div id="results-list"></div>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
