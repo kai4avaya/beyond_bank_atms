@@ -11,6 +11,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BB ATM Finder">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -117,14 +119,11 @@
     <div class="container">
         <div class="header">
             <div class="brand">
-                <svg xmlns="http://www.w3.org/2000/svg" width="39" height="34" viewBox="0 0 39 34" fill="none">
-                    <g id="body">
-                        <path id="Rectangle 50" d="M0.426758 0.937134H34.063L38.5813 6.96153H4.94505L0.426758 0.937134Z" fill="currentColor" />
-                        <path id="Rectangle 51" d="M0.426758 27.0426H34.063L38.5813 33.067H3.94099L0.426758 27.0426Z" fill="currentColor" />
-                        <path id="Rectangle 52" d="M18.9985 13.9899H4.94162L0.423321 20.0143H14.4802L18.9985 13.9899Z" fill="currentColor" />
-                        <path id="Rectangle 53" d="M37.0732 13.9899H24.0204L19.5021 20.0143H33.559L37.0732 13.9899Z" fill="currentColor" />
-                    </g>
-                </svg>
+                <div style="border-radius: 2px; height: 57px; margin: 0px 7px 0px 17px; width: 57px;">
+                    <div role="img" style="align-items: center; background: rgb(0, 0, 139); border-radius: 2px; display: flex; height: 57px; justify-content: center; width: 57px;">
+                        <i class="fas fa-landmark" style="color: rgb(255, 255, 255); font-size: 28.5px;"></i>
+                    </div>
+                </div>
                 <h1>Beyond Bank</h1>
             </div>
             <div class="switch-container">
@@ -154,7 +153,7 @@
         </div>
         
         <!-- Network Status Section -->
-        <div class="status-section">
+        <div class="status-section" style="display: none;">
             <div class="status-header active" id="status-toggle">
                 <h2>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
