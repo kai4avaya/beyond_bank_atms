@@ -264,3 +264,169 @@ searchInput.addEventListener('blur', () => {
         ease: 'power2.out'
     });
 });
+
+// Initialize status section
+let latencyChart, errorChart;
+let latencyData = [];
+let errorData = [];
+const maxDataPoints = 20;
+
+// Initialize status section state from local storage
+const statusToggle = document.getElementById('status-toggle');
+const statusContent = document.getElementById('status-content');
+let updateInterval;
+
+// Check local storage for status section state
+const isStatusOpen = localStorage.getItem('statusSectionOpen') !== 'false'; // Default to open if not set
+
+// Initialize status section state
+function initializeStatusSection() {
+    if (!isStatusOpen) {
+        statusToggle.classList.remove('active');
+        statusContent.classList.remove('active');
+    } else {
+        statusToggle.classList.add('active');
+        statusContent.classList.add('active');
+        initializeCharts();
+        updateInterval = setInterval(updateCharts, 1000);
+    }
+}
+function initializeCharts() {
+    if (latencyChart || errorChart) return;
+
+    // Initialize with some random data
+    latencyData = Array.from({ length: maxDataPoints }, () => 90 + Math.random() * 10);
+    errorData = Array.from({ length: maxDataPoints }, () => Math.floor(Math.random() * 5));
+
+    // Create latency chart
+    const latencyCtx = document.getElementById('latencyChart').getContext('2d');
+    latencyChart = new Chart(latencyCtx, {
+        type: 'line',
+        data: {
+            labels: Array.from({ length: maxDataPoints }, (_, i) => new Date(Date.now() - (maxDataPoints - i - 1) * 1000)),
+            datasets: [{
+                label: 'Network Latency',
+                data: latencyData,
+                borderColor: 'rgb(6, 33, 127)',
+                backgroundColor: 'rgba(6, 33, 127, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'second',
+                        displayFormats: {
+                            second: 'HH:mm:ss'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Latency (ms)'
+                    }
+                }
+            },
+            animation: {
+                duration: 750,
+                easing: 'easeInOutQuart'
+            }
+        }
+    });
+
+    // Create error chart
+    const errorCtx = document.getElementById('errorChart').getContext('2d');
+    errorChart = new Chart(errorCtx, {
+        type: 'bar',
+        data: {
+            labels: Array.from({ length: maxDataPoints }, (_, i) => `${i + 1}s ago`),
+            datasets: [{
+                label: 'Network Errors',
+                data: errorData,
+                backgroundColor: 'rgba(57, 84, 182, 0.8)',
+                borderColor: 'rgb(57, 84, 182)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 750,
+                easing: 'easeInOutQuart'
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+// Update charts with new data
+function updateCharts() {
+    if (!latencyChart || !errorChart) return;
+
+    // Update latency data
+    const newLatency = 90 + Math.random() * 10;
+    latencyData.push({
+        x: new Date(),
+        y: newLatency
+    });
+    if (latencyData.length > maxDataPoints) {
+        latencyData.shift();
+    }
+    latencyChart.data.datasets[0].data = latencyData;
+    latencyChart.update('none');
+
+    // Update error data
+    errorData.push(Math.floor(Math.random() * 5));
+    if (errorData.length > maxDataPoints) {
+        errorData.shift();
+    }
+    errorChart.data.datasets[0].data = errorData;
+    errorChart.update('none');
+}
+
+// Toggle status section
+statusToggle.addEventListener('click', () => {
+    const isNowOpen = !statusToggle.classList.contains('active');
+    
+    statusToggle.classList.toggle('active');
+    statusContent.classList.toggle('active');
+    
+    // Save state to local storage
+    localStorage.setItem('statusSectionOpen', isNowOpen);
+    
+    if (isNowOpen) {
+        initializeCharts();
+        updateInterval = setInterval(updateCharts, 1000);
+    } else {
+        if (updateInterval) {
+            clearInterval(updateInterval);
+        }
+    }
+});
+
+// Initialize status section on page load
+initializeStatusSection();

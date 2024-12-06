@@ -246,3 +246,64 @@ h2 {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
+.status-section {
+    margin-top: 20px;
+    background-color: var(--background-color);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.status-header {
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.status-header:hover {
+    background-color: var(--accent-color);
+}
+
+.status-header h2 {
+    margin: 0;
+}
+
+.toggle-icon {
+    color: var(--primary-color);
+    transition: transform 0.3s;
+}
+
+.status-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.status-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.status-content.active {
+    max-height: 800px;
+}
+
+.chart-container {
+    padding: 20px;
+    border-top: 1px solid var(--accent-color);
+}
+
+.chart-container h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 300px !important;
+    margin-bottom: 20px;
+}
