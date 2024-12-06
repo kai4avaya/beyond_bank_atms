@@ -28,6 +28,90 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
+    <style>
+        .status-section {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+
+        .status-header:hover {
+            background: #e9ecef;
+        }
+
+        .status-header h2 {
+            margin: 0;
+            color: #06217f;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+            color: #06217f;
+            font-size: 1.2em;
+        }
+
+        .status-header.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .status-content {
+            display: none;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .status-content.active {
+            display: block;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .chart-container.polar-chart {
+            height: 500px;
+            grid-column: 1 / -1;
+        }
+
+        .chart-container h3 {
+            margin: 0 0 15px 0;
+            color: #06217f;
+            font-size: 1.1em;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -69,24 +153,36 @@
             <div id="map"></div>
         </div>
         
+        <!-- Network Status Section -->
         <div class="status-section">
             <div class="status-header active" id="status-toggle">
-                <h2>Network Status</h2>
+                <h2>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18v18H3zM8 12h8M12 8v8"/>
+                    </svg>
+                    Network Status
+                </h2>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="status-content active" id="status-content">
-                <div class="chart-container">
-                    <h3>Network Latency</h3>
-                    <canvas id="latencyChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>Error Rate</h3>
-                    <canvas id="errorChart"></canvas>
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Network Latency</h3>
+                        <canvas id="latencyChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Error Rate</h3>
+                        <canvas id="errorChart"></canvas>
+                    </div>
+                    <div class="chart-container polar-chart">
+                        <h3>Network Performance Metrics</h3>
+                        <canvas id="networkPolarChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <!-- Scripts -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -95,32 +191,21 @@
     <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
     <script src="script.js"></script>
     
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Installation -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
+        let deferredPrompt;
+        const addBtn = document.getElementById('add-button');
+        
+        if (addBtn) {
+            addBtn.style.display = 'none';
         }
         
-        // Add to Home Screen prompt handler
-        let deferredPrompt;
-        const addBtn = document.createElement('button');
-        addBtn.style.display = 'none';
-
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
-            // Update UI to notify the user they can add to home screen
-            addBtn.style.display = 'block';
+            if (addBtn) {
+                addBtn.style.display = 'block';
+            }
         });
     </script>
 </body>

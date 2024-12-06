@@ -265,52 +265,95 @@ searchInput.addEventListener('blur', () => {
     });
 });
 
-// Initialize status section
-let latencyChart, errorChart;
+// Initialize variables
+let latencyChart, errorChart, networkPolarChart;
 let latencyData = [];
 let errorData = [];
 const maxDataPoints = 20;
-
-// Initialize status section state from local storage
-const statusToggle = document.getElementById('status-toggle');
-const statusContent = document.getElementById('status-content');
 let updateInterval;
 
-// Check local storage for status section state
-const isStatusOpen = localStorage.getItem('statusSectionOpen') !== 'false'; // Default to open if not set
-
-// Initialize status section state
+// Initialize status section
 function initializeStatusSection() {
-    if (!isStatusOpen) {
+    const statusToggle = document.getElementById('status-toggle');
+    const statusContent = document.getElementById('status-content');
+    
+    if (!statusToggle || !statusContent) {
+        console.error('Status section elements not found');
+        return;
+    }
+
+    // Get saved state from localStorage
+    const isOpen = localStorage.getItem('statusSectionOpen') !== 'false';
+    
+    if (!isOpen) {
         statusToggle.classList.remove('active');
         statusContent.classList.remove('active');
-    } else {
-        statusToggle.classList.add('active');
-        statusContent.classList.add('active');
+    }
+
+    // Initialize charts if section is open
+    if (isOpen) {
         initializeCharts();
         updateInterval = setInterval(updateCharts, 1000);
     }
-}
-function initializeCharts() {
-    if (latencyChart || errorChart) return;
 
-    // Initialize with some random data
-    latencyData = Array.from({ length: maxDataPoints }, () => 90 + Math.random() * 10);
+    // Add click event listener
+    statusToggle.addEventListener('click', () => {
+        const isNowOpen = !statusToggle.classList.contains('active');
+        
+        // Toggle classes
+        statusToggle.classList.toggle('active');
+        statusContent.classList.toggle('active');
+        
+        // Save state to localStorage
+        localStorage.setItem('statusSectionOpen', isNowOpen);
+        
+        // Initialize or clear interval based on state
+        if (isNowOpen) {
+            initializeCharts();
+            updateInterval = setInterval(updateCharts, 1000);
+        } else {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+        }
+    });
+}
+
+// Wait for DOM to be fully loaded before initializing
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeStatusSection);
+} else {
+    initializeStatusSection();
+}
+
+function initializeCharts() {
+    if (latencyChart || errorChart || networkPolarChart) return;
+
+    // Initialize with static data points for line chart
+    const timeLabels = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date();
+        date.setMinutes(date.getMinutes() - (11 - i));
+        return date;
+    });
+
+    latencyData = timeLabels.map(() => Math.floor(90 + Math.random() * 10));
     errorData = Array.from({ length: maxDataPoints }, () => Math.floor(Math.random() * 5));
 
-    // Create latency chart
+    // Create latency chart (static with animation)
     const latencyCtx = document.getElementById('latencyChart').getContext('2d');
     latencyChart = new Chart(latencyCtx, {
         type: 'line',
         data: {
-            labels: Array.from({ length: maxDataPoints }, (_, i) => new Date(Date.now() - (maxDataPoints - i - 1) * 1000)),
+            labels: timeLabels,
             datasets: [{
                 label: 'Network Latency',
                 data: latencyData,
                 borderColor: 'rgb(6, 33, 127)',
                 backgroundColor: 'rgba(6, 33, 127, 0.1)',
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointRadius: 3,
+                borderWidth: 2
             }]
         },
         options: {
@@ -320,9 +363,9 @@ function initializeCharts() {
                 x: {
                     type: 'time',
                     time: {
-                        unit: 'second',
+                        unit: 'minute',
                         displayFormats: {
-                            second: 'HH:mm:ss'
+                            minute: 'HH:mm'
                         }
                     },
                     title: {
@@ -332,6 +375,7 @@ function initializeCharts() {
                 },
                 y: {
                     beginAtZero: true,
+                    max: 120,
                     title: {
                         display: true,
                         text: 'Latency (ms)'
@@ -339,13 +383,13 @@ function initializeCharts() {
                 }
             },
             animation: {
-                duration: 750,
+                duration: 2000,
                 easing: 'easeInOutQuart'
             }
         }
     });
 
-    // Create error chart
+    // Create error chart (animated)
     const errorCtx = document.getElementById('errorChart').getContext('2d');
     errorChart = new Chart(errorCtx, {
         type: 'bar',
@@ -382,22 +426,93 @@ function initializeCharts() {
             }
         }
     });
-}
-// Update charts with new data
-function updateCharts() {
-    if (!latencyChart || !errorChart) return;
 
-    // Update latency data
-    const newLatency = 90 + Math.random() * 10;
-    latencyData.push({
-        x: new Date(),
-        y: newLatency
+    // Create network polar area chart
+    const polarCtx = document.getElementById('networkPolarChart').getContext('2d');
+    networkPolarChart = new Chart(polarCtx, {
+        type: 'polarArea',
+        data: {
+            labels: [
+                'Response Time',
+                'Bandwidth Usage',
+                'Connection Strength',
+                'Data Transfer',
+                'Network Security',
+                'Server Load'
+            ],
+            datasets: [{
+                label: 'Network Metrics',
+                data: [
+                    85,  // Response Time
+                    92,  // Bandwidth Usage
+                    78,  // Connection Strength
+                    88,  // Data Transfer
+                    95,  // Network Security
+                    82   // Server Load
+                ],
+                backgroundColor: [
+                    'rgba(6, 33, 127, 0.7)',
+                    'rgba(57, 84, 182, 0.7)',
+                    'rgba(82, 113, 255, 0.7)',
+                    'rgba(116, 143, 252, 0.7)',
+                    'rgba(145, 167, 255, 0.7)',
+                    'rgba(179, 194, 255, 0.7)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            scales: {
+                r: {
+                    ticks: {
+                        beginAtZero: true,
+                        max: 100,
+                        stepSize: 20,
+                        font: {
+                            size: 12
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    angleLines: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        font: {
+                            size: 14
+                        },
+                        padding: 20
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Network Performance Metrics',
+                    font: {
+                        size: 16,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    }
+                }
+            }
+        }
     });
-    if (latencyData.length > maxDataPoints) {
-        latencyData.shift();
-    }
-    latencyChart.data.datasets[0].data = latencyData;
-    latencyChart.update('none');
+}
+
+// Update only the error chart
+function updateCharts() {
+    if (!errorChart) return;
 
     // Update error data
     errorData.push(Math.floor(Math.random() * 5));
@@ -407,26 +522,3 @@ function updateCharts() {
     errorChart.data.datasets[0].data = errorData;
     errorChart.update('none');
 }
-
-// Toggle status section
-statusToggle.addEventListener('click', () => {
-    const isNowOpen = !statusToggle.classList.contains('active');
-    
-    statusToggle.classList.toggle('active');
-    statusContent.classList.toggle('active');
-    
-    // Save state to local storage
-    localStorage.setItem('statusSectionOpen', isNowOpen);
-    
-    if (isNowOpen) {
-        initializeCharts();
-        updateInterval = setInterval(updateCharts, 1000);
-    } else {
-        if (updateInterval) {
-            clearInterval(updateInterval);
-        }
-    }
-});
-
-// Initialize status section on page load
-initializeStatusSection();
