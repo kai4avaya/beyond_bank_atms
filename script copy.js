@@ -1,37 +1,3 @@
-// Add this near the top of script.js
-const verticalConfig = {
-    'retail': {
-        icon: 'fa-shopping-cart',
-        color: '#000000',
-        textColor: '#FFFFFF'
-    },
-    'bank': {
-        icon: 'fa-landmark',
-        color: '#00008B',
-        textColor: '#FFFFFF'
-    },
-    'health': {
-        icon: 'fa-hospital',
-        color: '#006400',
-        textColor: '#FFFFFF'
-    },
-    'education': {
-        icon: 'fa-graduation-cap',
-        color: '#4B0082',
-        textColor: '#FFFFFF'
-    },
-    'tech': {
-        icon: 'fa-microchip',
-        color: '#007BFF',
-        textColor: '#FFFFFF'
-    },
-    'default': {
-        icon: 'fa-landmark',
-        color: '#155e8b',
-        textColor: '#FFFFFF'
-    }
-};
-
 // Initialize map
 const map = L.map('map').setView([40.7128, -74.0060], 13); // Default to NYC coordinates
 
@@ -65,16 +31,10 @@ gsap.to('.container', {
     ease: 'power2.out'
 });
 
-// Get location type from URL parameters
-const urlParams = new URLSearchParams(window.location.search);
-const locationType = urlParams.get('type') || 'bank'; // Default to 'bank' if no type specified
-
 // Function to get location name based on switch state
 function getLocationName(originalName, type) {
     if (renameSwitch.checked) {
-        // Capitalize first letter of locationType
-        const displayType = locationType.charAt(0).toUpperCase() + locationType.slice(1);
-        return `Beyond ${displayType}`;
+        return 'Beyond Bank';
     }
     return originalName || type;
 }
@@ -159,33 +119,13 @@ function updateResultsList(results) {
 
 // Function to handle address suggestions
 async function getSuggestions(query) {
-    if (!query || query.length < 3) { // Only search if query is 3+ characters
+    if (!query) {
         document.getElementById('suggestions').style.display = 'none';
         return;
     }
 
     try {
-        // Add error handling timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-        const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, 
-            {
-                signal: controller.signal,
-                headers: {
-                    'User-Agent': 'BeyondLocator/1.0', // Add user agent
-                    'Accept-Language': 'en' // Specify language
-                }
-            }
-        );
-        
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
         const data = await response.json();
         
         const suggestions = document.getElementById('suggestions');
@@ -212,10 +152,6 @@ async function getSuggestions(query) {
         }
     } catch (error) {
         console.error('Error fetching suggestions:', error);
-        // Show user-friendly error message
-        const suggestions = document.getElementById('suggestions');
-        suggestions.innerHTML = '<div class="suggestion-item error">Unable to fetch suggestions. Please try again.</div>';
-        suggestions.style.display = 'block';
     }
 }
 
@@ -258,16 +194,14 @@ async function searchLocation(predefinedLat, predefinedLon) {
         // Clear existing markers
         clearMarkers();
 
-        // Search for locations in the area
-        const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(node["amenity"="${locationType}"](around:2000,${lat},${lon}););out body;`;
+        // Search for ATMs and banks in the area
+        const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];(node["amenity"="atm"](around:2000,${lat},${lon});node["amenity"="bank"](around:2000,${lat},${lon}););out body;`;
         const poiResponse = await fetch(overpassUrl);
         const poiData = await poiResponse.json();
 
         // Process and sort results by distance
         currentResults = poiData.elements.map(element => {
-            // Capitalize first letter of locationType for display
-            const displayType = locationType.charAt(0).toUpperCase() + locationType.slice(1);
-            const type = element.tags.amenity === locationType ? displayType : displayType;
+            const type = element.tags.amenity === 'atm' ? 'ATM' : 'Bank';
             const name = element.tags.name || type;
             const distance = calculateDistance(lat, lon, element.lat, element.lon);
             
@@ -303,7 +237,7 @@ document.getElementById('search-input').addEventListener('keypress', (e) => {
 let debounceTimer;
 document.getElementById('search-input').addEventListener('input', (e) => {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => getSuggestions(e.target.value), 500); // Increased to 500ms
+    debounceTimer = setTimeout(() => getSuggestions(e.target.value), 300);
 });
 
 // Close suggestions when clicking outside
@@ -588,77 +522,3 @@ function updateCharts() {
     errorChart.data.datasets[0].data = errorData;
     errorChart.update('none');
 }
-
-// Update the icon and colors based on location type
-function updateBranding() {
-    const config = verticalConfig[locationType] || verticalConfig.default;
-    
-    // Update icon
-    const iconElement = document.querySelector('.brand i');
-    iconElement.className = `fas ${config.icon}`;
-    
-    // Update colors
-    const brandDiv = document.querySelector('.brand div[role="img"]');
-    brandDiv.style.background = config.color;
-    
-    // Update text color
-    iconElement.style.color = config.textColor;
-    
-    // Update other brand elements if needed
-    document.documentElement.style.setProperty('--primary-color', config.color);
-}
-
-// Call this after getting locationType
-updateBranding();
-
-// Add this function to handle all title/text updates
-function updatePageTitles() {
-    const displayType = locationType.charAt(0).toUpperCase() + locationType.slice(1);
-    
-    // Update document title
-    document.title = `Beyond ${displayType} Locator`;
-    
-    // Update meta description
-    document.querySelector('meta[name="description"]').content = `Find Beyond ${displayType} locations and track network status`;
-    
-    // Update app title
-    document.querySelector('meta[name="apple-mobile-web-app-title"]').content = `BB ${displayType} Finder`;
-    
-    // Update page headers
-    document.getElementById('locator-title').textContent = `${displayType} Locator`;
-    document.getElementById('results-title').textContent = `Nearest ${displayType} Locations`;
-    
-    // Update switch label
-    document.querySelector('.switch-label').textContent = `Rename to Beyond ${displayType}`;
-}
-
-// Call updatePageTitles after getting locationType
-updatePageTitles();
-
-// Add this function to update the brand section
-function updateBrandSection() {
-    const displayType = locationType.charAt(0).toUpperCase() + locationType.slice(1);
-    
-    // Update brand icon and color based on type
-    const brandIcon = document.querySelector('.brand i');
-    const brandBackground = document.querySelector('.brand div[role="img"]');
-    const brandName = document.querySelector('.brand h1');
-    
-    // Update icon and colors based on type
-    const config = verticalConfig[locationType] || verticalConfig.default;
-    
-    // Update icon class
-    brandIcon.className = `fas ${config.icon}`;
-    
-    // Update background color
-    brandBackground.style.background = config.color;
-    
-    // Update text color
-    brandIcon.style.color = config.textColor;
-    
-    // Update brand name
-    brandName.textContent = `Beyond ${displayType}`;
-}
-
-// Call this function after getting locationType
-updateBrandSection();

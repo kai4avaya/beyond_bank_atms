@@ -113,20 +113,6 @@
             width: 100% !important;
             height: calc(100% - 40px) !important;
         }
-
-        .suggestion-item.error {
-            color: #721c24;
-            background-color: #f8d7da;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .suggestion-item.loading {
-            color: #666;
-            text-align: center;
-            padding: 10px;
-            background-color: #f8f9fa;
-        }
     </style>
 </head>
 <body>
@@ -149,7 +135,7 @@
             </div>
         </div>
         <div class="search-container">
-            <h2 id="locator-title">ATM & Bank Locator</h2>
+            <h2>ATM & Bank Locator</h2>
             <div class="search-box">
                 <div class="input-wrapper">
                     <input type="text" id="search-input" placeholder="Enter location...">
@@ -160,7 +146,7 @@
         </div>
         <div class="content-container">
             <div class="results-container">
-                <h2 id="results-title">Nearest Locations</h2>
+                <h2>Nearest ATMs</h2>
                 <div id="results-list"></div>
             </div>
             <div id="map"></div>
@@ -220,27 +206,6 @@
                 addBtn.style.display = 'block';
             }
         });
-    </script>
-    
-    <!-- Update page titles based on location type -->
-    <script>
-        const displayType = locationType.charAt(0).toUpperCase() + locationType.slice(1);
-        
-        // Update document title
-        document.title = `Beyond ${displayType} Locator`;
-        
-        // Update meta description
-        document.querySelector('meta[name="description"]').content = `Find Beyond ${displayType} locations and track network status`;
-        
-        // Update app title
-        document.querySelector('meta[name="apple-mobile-web-app-title"]').content = `BB ${displayType} Finder`;
-        
-        // Update page headers
-        document.getElementById('locator-title').textContent = `${displayType} Locator`;
-        document.getElementById('results-title').textContent = `Nearest ${displayType} Locations`;
-        
-        // Update switch label
-        document.querySelector('.switch-label').textContent = `Rename to Beyond ${displayType}`;
     </script>
 </body>
 </html>
