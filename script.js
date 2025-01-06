@@ -6,7 +6,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Stores',
         icon: 'fa-store',
-        brandName: 'Beyond-Retail'
+        brandName: 'Beyond Retail'
     },
     'healthcare': {
         color: '#006400',
@@ -14,7 +14,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Hospitals',
         icon: 'fa-hospital',
-        brandName: 'Beyond-Healthcare'
+        brandName: 'Beyond Healthcare'
     },
     'tech': {
         color: '#007BFF',
@@ -22,7 +22,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Centers',
         icon: 'fa-microchip',
-        brandName: 'Beyond-Tech'
+        brandName: 'Beyond Tech'
     },
     'travel': {
         color: '#00CED1',
@@ -30,7 +30,7 @@ const themeConfig = {
         textColor: '#000000',
         items: 'Locations',
         icon: 'fa-plane',
-        brandName: 'Beyond-Travel'
+        brandName: 'Beyond Travel'
     },
     'bank': {
         color: '#00008B',
@@ -38,7 +38,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'ATMs',
         icon: 'fa-landmark',
-        brandName: 'Beyond-Bank'
+        brandName: 'Beyond Bank'
     }
 };
 
