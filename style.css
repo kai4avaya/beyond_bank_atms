@@ -120,7 +120,8 @@ input:checked + .slider:before {
 }
 
 .switch-label {
-    color: var(--text-color);
+    color: lightgray;
+    /* var(--text-color); */
     font-size: 14px;
 }
 
