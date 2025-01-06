@@ -59,6 +59,11 @@ body {
     gap: 10px;
 }
 
+
+.brand i.fas {
+    transition: all 0.3s ease;
+}
+
 .switch {
     position: relative;
     display: inline-block;

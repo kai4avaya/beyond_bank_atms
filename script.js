@@ -1,3 +1,71 @@
+// HARD CODED THEMES
+const themeConfig = {
+    'retail': {
+        color: '#000000',
+        secondaryColor: '#404040',
+        textColor: '#FFFFFF',
+        items: 'Stores',
+        icon: 'fa-store',
+        brandName: 'Beyond-Retail'
+    },
+    'healthcare': {
+        color: '#006400',
+        secondaryColor: '#008000',
+        textColor: '#FFFFFF',
+        items: 'Hospitals',
+        icon: 'fa-hospital',
+        brandName: 'Beyond-Healthcare'
+    },
+    'tech': {
+        color: '#007BFF',
+        secondaryColor: '#0056b3',
+        textColor: '#FFFFFF',
+        items: 'Centers',
+        icon: 'fa-microchip',
+        brandName: 'Beyond-Tech'
+    },
+    'travel': {
+        color: '#00CED1',
+        secondaryColor: '#008B8B',
+        textColor: '#000000',
+        items: 'Locations',
+        icon: 'fa-plane',
+        brandName: 'Beyond-Travel'
+    },
+    'bank': {
+        color: '#00008B',
+        secondaryColor: '#000066',
+        textColor: '#FFFFFF',
+        items: 'ATMs',
+        icon: 'fa-landmark',
+        brandName: 'Beyond-Bank'
+    }
+};
+
+
+const iconMappings = {
+    'computer': 'fa-computer',
+    'computers': 'fa-computer',
+    'tech': 'fa-microchip',
+    'college': 'fa-graduation-cap',
+    'school': 'fa-school',
+    'education': 'fa-graduation-cap',
+    'food': 'fa-utensils',
+    'restaurant': 'fa-utensils',
+    'gym': 'fa-dumbbell',
+    'fitness': 'fa-dumbbell',
+    'office': 'fa-building',
+    'default': 'fa-building'
+};
+
+// Add fallback icons array
+const fallbackIcons = [
+    'fa-building',
+    'fa-location-dot',
+    'fa-map-pin',
+    'fa-clipboard-list',
+    'fa-bookmark'
+];
 // Initialize map
 const map = L.map('map').setView([40.7128, -74.0060], 13); // Default to NYC coordinates
 
@@ -522,3 +590,162 @@ function updateCharts() {
     errorChart.data.datasets[0].data = errorData;
     errorChart.update('none');
 }
+
+// URL UPDATER
+
+let businessType = 'Bank'; // Default value
+
+
+function getIconForType(type) {
+    // Check direct match
+    const lowercaseType = type.toLowerCase();
+    if (iconMappings[lowercaseType]) {
+        return iconMappings[lowercaseType];
+    }
+    
+    // Check if any mapping key is contained in the type
+    const matchingKey = Object.keys(iconMappings).find(key => 
+        lowercaseType.includes(key)
+    );
+    if (matchingKey) {
+        return iconMappings[matchingKey];
+    }
+    
+    // Return random fallback icon
+    return fallbackIcons[Math.floor(Math.random() * fallbackIcons.length)];
+}
+
+function generateThemeColors(seed) {
+    const hash = seed.split('').reduce((acc, char) => char.charCodeAt(0) + acc, 0);
+    const hue = hash % 360;
+    return {
+        color: `hsl(${hue}, 60%, 30%)`,
+        secondaryColor: `hsl(${hue}, 60%, 20%)`,
+        textColor: '#FFFFFF'
+    };
+}
+
+function getOrCreateTheme(type) {
+    if (themeConfig[type.toLowerCase()]) {
+        return themeConfig[type.toLowerCase()];
+    }
+    
+    const { color, secondaryColor, textColor } = generateThemeColors(type);
+    const icon = getIconForType(type);
+    
+    return {
+        color,
+        secondaryColor,
+        textColor,
+        items: 'Locations',
+        icon,
+        brandName: `Beyond-${type.charAt(0).toUpperCase() + type.slice(1)}`
+    };
+}
+function updateThemeColors(type) {
+    const theme = getOrCreateTheme(type);
+    document.documentElement.style.setProperty('--primary-color', theme.color);
+    document.documentElement.style.setProperty('--secondary-color', theme.secondaryColor);
+    document.documentElement.style.setProperty('--text-color', theme.textColor);
+    
+    // Update brand icon colors
+    const brandIcon = document.querySelector('.brand [role="img"]');
+    if (brandIcon) {
+        brandIcon.style.background = theme.color;
+    }
+
+        const icon = document.querySelector('.brand i.fas');
+    if (icon) {
+        icon.style.color = theme.textColor;
+    }
+}
+function handleBusinessType() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const type = urlParams.get('type');
+    
+    if (type) {
+        // Capitalize first letter of type
+        businessType = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+        const theme = getOrCreateTheme(businessType);
+        
+        // Update theme and branding
+        updateThemeColors(businessType);
+        updateIcon(theme.icon);
+        updateBusinessTypeDisplay(theme.items);
+        
+        // Update global business type
+        window.businessType = businessType;
+    }
+}
+
+
+function updateIcon(iconClass) {
+    const brandIcon = document.querySelector('.brand i.fas');
+    if (brandIcon) {
+        brandIcon.className = `fas ${iconClass}`;
+    }
+}
+function updateBusinessTypeDisplay(itemName) {
+    // Get theme config for current type, including dynamically generated ones
+    const theme = getOrCreateTheme(businessType);
+    
+    // Update page title
+    document.title = `${theme.brandName} ${itemName} Locator`;
+    
+    // Update header text
+    const header = document.querySelector('.search-container h2');
+    if (header) {
+        header.textContent = `${theme.brandName} ${itemName}`;
+    }
+    
+    // Update brand name in header
+    const brandName = document.querySelector('.brand h1');
+    if (brandName) {
+        brandName.textContent = theme.brandName;
+    }
+    
+    // Update results header
+    const resultsHeader = document.querySelector('.results-container h2');
+    if (resultsHeader) {
+        resultsHeader.textContent = `Nearest ${theme.brandName} ${itemName}`;
+    }
+    
+    // Update switch label
+    const switchLabel = document.querySelector('.switch-label');
+    if (switchLabel) {
+        switchLabel.textContent = `Rename to ${theme.brandName}`;
+    }
+}
+
+function getLocationName(originalName, type) {
+    const config = themeConfig[businessType.toLowerCase()];
+    if (renameSwitch.checked) {
+        return config.brandName;
+    }
+    return originalName || `${config.brandName} ${config.items}`;
+}
+
+
+// function updateThemeColors(type) {
+//     const theme = themeConfig[type];
+//     if (!theme) return;
+    
+//     // Update document colors
+//     document.documentElement.style.setProperty('--primary-color', theme.color);
+//     document.documentElement.style.setProperty('--text-color', theme.textColor);
+    
+//     // Update brand icon colors
+//     const brandIcon = document.querySelector('.brand [role="img"]');
+//     if (brandIcon) {
+//         brandIcon.style.background = theme.color;
+//     }
+    
+//     // Update icon color
+//     const icon = document.querySelector('.brand i.fas');
+//     if (icon) {
+//         icon.style.color = theme.textColor;
+//     }
+// }
+
+// Add to window load event
+window.addEventListener('load', handleBusinessType);
