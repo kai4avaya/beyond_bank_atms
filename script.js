@@ -639,7 +639,7 @@ function getOrCreateTheme(type) {
         textColor,
         items: 'Locations',
         icon,
-        brandName: `Beyond-${type.charAt(0).toUpperCase() + type.slice(1)}`
+        brandName: `Beyond ${type.charAt(0).toUpperCase() + type.slice(1)}`
     };
 }
 function updateThemeColors(type) {
