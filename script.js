@@ -6,7 +6,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Stores',
         icon: 'fa-store',
-        brandName: 'Beyond Retail'
+        brandName: 'Altamino Retail'
     },
     'healthcare': {
         color: '#006400',
@@ -14,7 +14,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Hospitals',
         icon: 'fa-hospital',
-        brandName: 'Beyond Healthcare'
+        brandName: 'Altamino Healthcare'
     },
     'tech': {
         color: '#007BFF',
@@ -22,7 +22,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'Centers',
         icon: 'fa-microchip',
-        brandName: 'Beyond Tech'
+        brandName: 'Altamino Tech'
     },
     'travel': {
         color: '#00CED1',
@@ -30,7 +30,7 @@ const themeConfig = {
         textColor: '#000000',
         items: 'Locations',
         icon: 'fa-plane',
-        brandName: 'Beyond Travel'
+        brandName: 'Altamino Travel'
     },
     'bank': {
         color: '#00008B',
@@ -38,7 +38,7 @@ const themeConfig = {
         textColor: '#FFFFFF',
         items: 'ATMs',
         icon: 'fa-landmark',
-        brandName: 'Beyond Bank'
+        brandName: 'Altamino Bank'
     }
 };
 
@@ -102,7 +102,7 @@ gsap.to('.container', {
 // Function to get location name based on switch state
 function getLocationName(originalName, type) {
     if (renameSwitch.checked) {
-        return 'Beyond Bank';
+        return 'Altamino Bank';
     }
     return originalName || type;
 }
@@ -639,7 +639,7 @@ function getOrCreateTheme(type) {
         textColor,
         items: 'Locations',
         icon,
-        brandName: `Beyond ${type.charAt(0).toUpperCase() + type.slice(1)}`
+        brandName: `Altamino ${type.charAt(0).toUpperCase() + type.slice(1)}`
     };
 }
 function updateThemeColors(type) {

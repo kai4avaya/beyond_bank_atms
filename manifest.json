@@ -1,7 +1,7 @@
 {
-  "name": "Beyond Bank ATM Locator",
+  "name": "Altamino Locator",
   "short_name": "ATM Locator",
-  "description": "Find Beyond Bank ATMs near you",
+  "description": "Find Altamino Locations Near You",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
